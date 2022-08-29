@@ -1,0 +1,133 @@
+---
+# Source: apisix-dashboard/templates/serviceaccount.yaml
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: apisix-dashboard
+  namespace: apisix
+  labels:
+    helm.sh/chart: apisix-dashboard-0.6.0
+    app.kubernetes.io/name: apisix-dashboard
+    app.kubernetes.io/instance: apisix-dashboard
+    app.kubernetes.io/version: "2.13.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: apisix-dashboard/templates/configmap.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apisix-dashboard
+  namespace: apisix
+  labels:
+    helm.sh/chart: apisix-dashboard-0.6.0
+    app.kubernetes.io/name: apisix-dashboard
+    app.kubernetes.io/instance: apisix-dashboard
+    app.kubernetes.io/version: "2.13.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  conf.yaml: |-
+    conf:
+      listen:
+        host: 0.0.0.0
+        port: 9000
+      etcd:
+        prefix: "/apisix"
+        endpoints:
+          - apisix-etcd:2379
+      log:
+        error_log:
+          level: warn
+          file_path: /dev/stderr
+        access_log:
+          file_path: /dev/stdout
+    authentication:
+      secert: secert
+      expire_time: 3600
+      users:
+        - username: admin
+          password: admin
+---
+# Source: apisix-dashboard/templates/service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: apisix-dashboard
+  namespace: apisix
+  labels:
+    helm.sh/chart: apisix-dashboard-0.6.0
+    app.kubernetes.io/name: apisix-dashboard
+    app.kubernetes.io/instance: apisix-dashboard
+    app.kubernetes.io/version: "2.13.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: apisix-dashboard
+    app.kubernetes.io/instance: apisix-dashboard
+---
+# Source: apisix-dashboard/templates/deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apisix-dashboard
+  namespace: apisix
+  labels:
+    helm.sh/chart: apisix-dashboard-0.6.0
+    app.kubernetes.io/name: apisix-dashboard
+    app.kubernetes.io/instance: apisix-dashboard
+    app.kubernetes.io/version: "2.13.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: apisix-dashboard
+      app.kubernetes.io/instance: apisix-dashboard
+  template:
+    metadata:
+      annotations:
+        checksum/config: 7be84307e80ce79558684303e5db2de21b7b3582afc5878e6635a966e54e3301
+      labels:
+        app.kubernetes.io/name: apisix-dashboard
+        app.kubernetes.io/instance: apisix-dashboard
+    spec:
+      serviceAccountName: apisix-dashboard
+      securityContext:
+        {}
+      containers:
+        - name: apisix-dashboard
+          securityContext:
+            {}
+          image: "apache/apisix-dashboard:2.13-alpine"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+          resources:
+            {}
+          volumeMounts:
+            - mountPath: /usr/local/apisix-dashboard/conf/conf.yaml
+              name: apisix-dashboard-config
+              subPath: conf.yaml
+      volumes:
+        - configMap:
+            name: apisix-dashboard
+          name: apisix-dashboard-config
