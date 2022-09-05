@@ -13,6 +13,8 @@ git clone https://github.com/huweihuang/apisix-yaml.git
 ```bash
 # apisix
 kubectl create -f apisix/apisix.yaml
+# 如果要部署为daemonset,则执行以下命令
+kubectl create -f apisix/apisix-daemonset.yaml
 
 # apisix-ingress-controller
 kubectl create -f apisix-ingress-controller/apisix-ingress-controller-rbac.yaml
