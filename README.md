@@ -1,6 +1,8 @@
 # apisix-yaml
 
-通过yaml文件来部署
+如果采用helm来部署apisix可参考[安装APISIX](https://blog.huweihuang.com/kubernetes-notes/network/gateway/install/)。
+
+本仓库主要是通过yaml文件来部署APISIX。
 
 ```
 git clone https://github.com/huweihuang/apisix-yaml.git
@@ -17,7 +19,11 @@ kubectl create -f apisix/apisix.yaml
 kubectl create -f apisix/apisix-daemonset.yaml
 
 # apisix-ingress-controller
+# apisix crd
+kubectl create -f apisix-ingress-controller/customresourcedefinitions.yaml
+# rbac
 kubectl create -f apisix-ingress-controller/apisix-ingress-controller-rbac.yaml
+# ingress-controller deployment
 kubectl create -f apisix-ingress-controller/apisix-ingress-controller.yaml
 
 # apisix-dashborad
@@ -57,6 +63,13 @@ helm get manifest apisix-ingress-controller -n apisix > apisix-ingress-controlle
 - ConfigMap
 - Service
 - Deployment
+- CRD
+  - apisixclusterconfigs.apisix.apache.org
+  - apisixconsumers.apisix.apache.org
+  - apisixpluginconfigs.apisix.apache.org
+  - apisixroutes.apisix.apache.org
+  - apisixtlses.apisix.apache.org
+  - apisixupstreams.apisix.apache.org
 
 ## apisix-dashboard
 

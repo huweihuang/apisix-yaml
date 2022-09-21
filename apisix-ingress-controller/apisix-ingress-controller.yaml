@@ -16,9 +16,9 @@ data:
       kubeconfig: ""
       resync_interval: "6h"
       app_namespaces:
-      - "*"
-      namespace_selector:
       - ""
+      namespace_selector:
+      - "apisix.ingress=watching"
       election_id: "ingress-apisix-leader"
       ingress_class: "apisix"
       ingress_version: "networking/v1"

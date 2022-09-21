@@ -91,7 +91,7 @@ data:
         ssl_ciphers: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA256:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA"
 
     nginx_config:                     # config for render the template to genarate nginx.conf
-      error_log: "/dev/stderr"
+      error_log: "/usr/local/apisix/logs/error.log"
       error_log_level: "warn"         # warn,error
       worker_processes: "auto"
       enable_cpu_affinity: true
@@ -100,7 +100,7 @@ data:
         worker_connections: 10620
       http:
         enable_access_log: true
-        access_log: "/dev/stdout"
+        access_log: "/usr/local/apisix/logs/access.log"
         access_log_format: "$remote_addr - $remote_user [$time_local] $http_host \"$request\" $status $body_bytes_sent $request_time \"$http_referer\" \"$http_user_agent\" $upstream_addr $upstream_status $upstream_response_time \"$upstream_scheme://$upstream_host$upstream_uri\""
         access_log_format_escape: default
         keepalive_timeout: 60s         # timeout during which a keep-alive client connection will stay open on the server side.
@@ -276,6 +276,8 @@ spec:
             - mountPath: /usr/local/apisix/conf/config.yaml
               name: apisix-config
               subPath: config.yaml
+            - mountPath: /usr/local/apisix/logs
+              name: log
           resources:
             {}
       initContainers:
@@ -286,6 +288,10 @@ spec:
         - configMap:
             name: apisix
           name: apisix-config
+        - name: log
+          hostPath:
+            path: /data/apisix/log
+            type: DirectoryOrCreate
       affinity:
       hostNetwork: true
       nodeSelector:
