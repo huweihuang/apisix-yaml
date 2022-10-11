@@ -20,6 +20,7 @@ kubectl create -f apisix/apisix-daemonset.yaml
 
 # apisix-ingress-controller
 # apisix crd
+# wget https://raw.githubusercontent.com/apache/apisix-helm-chart/apisix-ingress-controller-0.9.3/charts/apisix-ingress-controller/crds/customresourcedefinitions.yaml
 kubectl create -f apisix-ingress-controller/customresourcedefinitions.yaml
 # rbac
 kubectl create -f apisix-ingress-controller/apisix-ingress-controller-rbac.yaml
@@ -40,12 +41,35 @@ apisix k8s yaml文件源于 https://github.com/apache/apisix-helm-chart 仓库�
 helm list -A
 ```
 
-生成yaml文件
+## 生成yaml文件
 
 ```
 helm get manifest apisix-dashboard -n apisix  > apisix-dashboard.yaml
 helm get manifest apisix -n apisix > apisix.yaml
 helm get manifest apisix-ingress-controller -n apisix > apisix-ingress-controller.yaml
+```
+
+## helm生成CRD文件
+
+有两种方式查看CRD文件。
+
+1、从git仓库上下载
+
+登录 https://github.com/apache/apisix-helm-chart ，选择版本tag，查看apisix-ingress-controller/crds/customresourcedefinitions.yaml
+
+```
+wget https://raw.githubusercontent.com/apache/apisix-helm-chart/apisix-ingress-controller-0.9.3/charts/apisix-ingress-controller/crds/customresourcedefinitions.yaml
+```
+
+2、下载helm文件
+
+```bash
+# 下载apisix/apisix-ingress-controller
+helm fetch apisix/apisix-ingress-controller
+# 解压
+tar -zvxf apisix-ingress-controller-0.9.3.tgz
+# 查看crd文件
+ll apisix-ingress-controller/crds/customresourcedefinitions.yaml
 ```
 
 # apisix k8s object
