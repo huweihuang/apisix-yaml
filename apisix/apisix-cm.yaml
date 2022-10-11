@@ -98,6 +98,11 @@ data:
       worker_rlimit_nofile: 20480     # the number of files a worker process can open, should be larger than worker_connections
       event:
         worker_connections: 10620
+      http_configuration_snippet: |
+        include /data/apisix/sites-available/*;
+      http_admin_configuration_snippet: |
+        access_log /usr/local/apisix/logs/apisix.admin.access.log;
+        error_log /usr/local/apisix/logs/apisix.admin.error.log;        
       http:
         enable_access_log: true
         access_log: "/usr/local/apisix/logs/access.log"
@@ -164,145 +169,14 @@ data:
       - real-ip
       - ext-plugin-pre-req
       - ext-plugin-post-req
+      - log-rotate
     stream_plugins:
       - mqtt-proxy
       - ip-restriction
       - limit-conn
-
----
-# Source: apisix/templates/service-admin.yaml
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: apisix-admin
-  namespace: apisix
-  annotations:
-  labels:
-    helm.sh/chart: apisix-0.11.0
-    app.kubernetes.io/name: apisix
-    app.kubernetes.io/instance: apisix
-    app.kubernetes.io/version: "2.15.0"
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/service: apisix-admin
-spec:
-  type: ClusterIP
-  ports:
-  - name: apisix-admin
-    port: 9180
-    targetPort: 9180
-    protocol: TCP
-  selector:
-    app.kubernetes.io/name: apisix
-    app.kubernetes.io/instance: apisix
----
-# Source: apisix/templates/service-gateway.yaml
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: apisix-gateway
-  namespace: apisix
-  annotations:
-  labels:
-    helm.sh/chart: apisix-0.11.0
-    app.kubernetes.io/name: apisix
-    app.kubernetes.io/instance: apisix
-    app.kubernetes.io/version: "2.15.0"
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/service: apisix-gateway
-spec:
-  type: NodePort
-  externalTrafficPolicy: Cluster
-  ports:
-  - name: apisix-gateway
-    port: 80
-    targetPort: 9080
-    protocol: TCP
-  selector:
-    app.kubernetes.io/name: apisix
-    app.kubernetes.io/instance: apisix
----
-# Source: apisix/templates/deployment.yaml
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: apisix
-  namespace: apisix
-  labels:
-    helm.sh/chart: apisix-0.11.0
-    app.kubernetes.io/name: apisix
-    app.kubernetes.io/instance: apisix
-    app.kubernetes.io/version: "2.15.0"
-    app.kubernetes.io/managed-by: Helm
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: apisix
-      app.kubernetes.io/instance: apisix
-  template:
-    metadata:
-      annotations:
-        checksum/config: 8c153a44550ecd96dd60feb8eef52d5ba2e42a11be5f2d1b77ed2fe467cefba7
-      labels:
-        app.kubernetes.io/name: apisix
-        app.kubernetes.io/instance: apisix
-    spec:
-      securityContext:
-        null
-      containers:
-        - name: apisix
-          securityContext:
-            null
-          image: "apache/apisix:2.15.0-alpine"
-          imagePullPolicy: IfNotPresent
-          env:
-          ports:
-            - name: http
-              containerPort: 9080
-              protocol: TCP
-            - name: tls
-              containerPort: 9443
-              protocol: TCP
-            - name: admin
-              containerPort: 9180
-              protocol: TCP
-          readinessProbe:
-            failureThreshold: 6
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            successThreshold: 1
-            tcpSocket:
-              port: 9080
-            timeoutSeconds: 1
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                - /bin/sh
-                - -c
-                - "sleep 30"
-          volumeMounts:
-            - mountPath: /usr/local/apisix/conf/config.yaml
-              name: apisix-config
-              subPath: config.yaml
-            - mountPath: /usr/local/apisix/logs
-              name: log
-          resources:
-            {}
-      initContainers:
-      - name: wait-etcd
-        image: busybox:1.28
-        command: ['sh', '-c', "until nc -z apisix-etcd.apisix.svc.cluster.local 2379; do echo waiting for etcd `date`; sleep 2; done;"]
-      volumes:
-        - configMap:
-            name: apisix
-          name: apisix-config
-        - name: log
-          hostPath:
-            path: /data/apisix/log
-            type: DirectoryOrCreate
-      affinity:
-
+    plugin_attr:
+      log-rotate:
+        interval: 86400
+        max_kept: 168
+        max_size: -1
+        enable_compression: false

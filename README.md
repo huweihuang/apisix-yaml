@@ -10,13 +10,16 @@ git clone https://github.com/huweihuang/apisix-yaml.git
 
 安装
 
-> 需要提前部署etcd并修改etcd配置。
+> 需要提前部署etcd并修改apisix配置。
 
 ```bash
-# apisix
-kubectl create -f apisix/apisix.yaml
-# 如果要部署为daemonset,则执行以下命令
+# apisix configmap and service
+kubectl create -f apisix/apisix-cm.yaml
+kubectl create -f apisix/apisix-svc.yaml
+# 如果要部署为 daemonset,则执行以下命令
 kubectl create -f apisix/apisix-daemonset.yaml
+# 如果要部署为 deployment,则执行以下命令
+kubectl create -f apisix/apisix-deployment.yaml
 
 # apisix-ingress-controller
 # apisix crd

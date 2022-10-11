@@ -1,0 +1,48 @@
+# Source: apisix/templates/service-admin.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: apisix-admin
+  namespace: apisix
+  annotations:
+  labels:
+    app.kubernetes.io/name: apisix
+    app.kubernetes.io/instance: apisix
+    app.kubernetes.io/version: "2.15.0"
+    app.kubernetes.io/service: apisix-admin
+spec:
+  type: ClusterIP
+  ports:
+  - name: apisix-admin
+    port: 9180
+    targetPort: 9180
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: apisix
+    app.kubernetes.io/instance: apisix
+---
+# Source: apisix/templates/service-gateway.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: apisix-gateway
+  namespace: apisix
+  annotations:
+  labels:
+    app.kubernetes.io/name: apisix
+    app.kubernetes.io/instance: apisix
+    app.kubernetes.io/version: "2.15.0"
+    app.kubernetes.io/service: apisix-gateway
+spec:
+  type: NodePort
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: apisix-gateway
+    port: 80
+    targetPort: 9080
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: apisix
+    app.kubernetes.io/instance: apisix

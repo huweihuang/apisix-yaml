@@ -1,22 +1,32 @@
+# Source: apisix/templates/deployment.yaml
+
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   name: apisix
   namespace: apisix
   labels:
+    helm.sh/chart: apisix-0.11.0
     app.kubernetes.io/name: apisix
     app.kubernetes.io/instance: apisix
+    app.kubernetes.io/version: "2.15.0"
+    app.kubernetes.io/managed-by: Helm
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: apisix
       app.kubernetes.io/instance: apisix
   template:
     metadata:
+      annotations:
+        checksum/config: 8c153a44550ecd96dd60feb8eef52d5ba2e42a11be5f2d1b77ed2fe467cefba7
       labels:
         app.kubernetes.io/name: apisix
         app.kubernetes.io/instance: apisix
     spec:
+      securityContext:
+        null
       containers:
         - name: apisix
           securityContext:
@@ -73,8 +83,6 @@ spec:
           name: log
         - hostPath:
             path: /etc/localtime
-          name: localtime
+          name: localtime          
       affinity:
-      hostNetwork: true
-      nodeSelector:
-        apisix.io/is-apisix-worker: "true"
+
