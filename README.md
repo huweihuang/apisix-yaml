@@ -81,12 +81,14 @@ ll apisix-ingress-controller/crds/customresourcedefinitions.yaml
 
 - ConfigMap
 - Service
-- Deployment
+- Deployment(Daemonset)
 
 ## apisix-ingress-controller
 
-- ServiceAccount
 - RBAC
+  - ServiceAccount (namespace级别)
+  - ClusterRole (cluster级别)
+  - ClusterRoleBinding (cluster级别：可绑定多个ServiceAccount)
 - ConfigMap
 - Service
 - Deployment
