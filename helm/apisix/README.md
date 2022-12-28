@@ -4,7 +4,7 @@
 
 - hostNetwork: true
 
-- nodeSelector: {apisix.io/apisix-worker-zone: <zone_name>}
+- nodeSelector: {apisix.io/apisix-worker-zone: \_ZONE_}
 
 - plugins:
 
@@ -39,4 +39,19 @@ sed -i "s|_ZONE_|${ZONE}|;
 s|_ETCD_IP1_|${ETCD_IP1}|;
 s|_ETCD_IP2_|${ETCD_IP2}|;
 s|_ETCD_IP3_|${ETCD_IP3}|" values.yaml
+```
+
+# 部署
+
+```bash
+# 添加和更新仓库
+helm repo add apisix https://charts.apiseven.com
+helm repo update
+# 拉取helm chart
+helm pull apisix/apisix --untar
+# 修改values.yaml
+
+# 安装或升级
+helm install apisix ./apisix -n apisix
+helm upgrade apisix ./apisix -n apisix
 ```

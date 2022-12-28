@@ -94,7 +94,7 @@ config:
     # -- namespace_selector represent basis for selecting managed namespaces.
     # the field is support since version 1.4.0
     # For example, "apisix.ingress=watching", so ingress will watching the namespaces which labels "apisix.ingress=watching"
-    namespaceSelector: [""]
+    namespaceSelector: ["apisix.ingress=watching"]
     # -- the election id for the controller leader campaign,
     # only the leader will watch and delivery resource changes,
     # other instances (as candidates) stand by.
@@ -102,7 +102,7 @@ config:
     # -- The class of an Ingress object is set using the field IngressClassName in
     # Kubernetes clusters version v1.18.0 or higher or the annotation
     # "kubernetes.io/ingress.class" (deprecated).
-    ingressClass: "apisix"
+    ingressClass: "_ZONE_"
     # -- the supported ingress api group version, can be "networking/v1beta1",
     # "networking/v1" (for Kubernetes version v1.19.0 or higher), and
     # "extensions/v1beta1", default is "networking/v1".
@@ -128,12 +128,18 @@ config:
     # -- Enabling this value, overrides serviceName and serviceNamespace.
     # serviceFullname: "apisix-admin.apisix.svc.local"
     serviceName: apisix-admin
-    serviceNamespace: ingress-apisix
+    serviceNamespace: _ZONE_
     servicePort: 9180
     adminKey: "edd1c9f034335f136f87ad84b625c8f1"
     clusterName: "default"
 
-resources: {}
+resources:
+  limits:
+    cpu: 500m
+    memory: 500Mi
+  requests:
+    cpu: 500m
+    memory: 500Mi
 
 initContainer:
   image: busybox
@@ -146,7 +152,7 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-nodeSelector: {}
+nodeSelector: {apisix.io/apisix-worker-zone: _ZONE_}
 tolerations: []
 
 # -- namespace: "ingress-apisix"
