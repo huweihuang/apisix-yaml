@@ -2,6 +2,8 @@
 
 如果采用helm来部署apisix可参考[安装APISIX](https://blog.huweihuang.com/kubernetes-notes/network/gateway/install/)。
 
+helm部署脚本参考 [helm](helm)
+
 本仓库主要是通过yaml文件来部署APISIX。
 
 ```
