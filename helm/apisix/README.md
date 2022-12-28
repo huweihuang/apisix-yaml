@@ -31,3 +31,12 @@
 - etcd:
     - enabled: false
     - host: 修改为已有的etcd节点
+
+# 脚本修改
+
+```bash
+sed -i "s|_ZONE_|${ZONE}|;
+s|_ETCD_IP1_|${ETCD_IP1}|;
+s|_ETCD_IP2_|${ETCD_IP2}|;
+s|_ETCD_IP3_|${ETCD_IP3}|" values.yaml
+```

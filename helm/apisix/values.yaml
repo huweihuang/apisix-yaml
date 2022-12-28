@@ -84,7 +84,7 @@ apisix:
     tag: 3.0.0-debian
 
   # -- Use a `DaemonSet` or `Deployment`
-  kind: Deployment
+  kind: DaemonSet
   # -- kind is DaemonSet, replicaCount not become effective
   replicaCount: 1
 
@@ -116,23 +116,23 @@ apisix:
     maxUnavailable: 1
 
   # -- Set pod resource requests & limits
-  resources: {}
+  resources:
     # -- Use the host's network namespace
 
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-  hostNetwork: false
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 500m
+      memory: 500Mi
+  hostNetwork: true
 
   # -- Node labels for Apache APISIX pod assignment
-  nodeSelector: {}
+  nodeSelector: {apisix.io/apisix-worker-zone: _ZONE_}
   # -- List of node taints to tolerate
   tolerations: []
   # -- Set affinity for Apache APISIX deploy
@@ -302,13 +302,19 @@ plugins:
   - real-ip
   - ext-plugin-pre-req
   - ext-plugin-post-req
+  - log-rotate
 stream_plugins:
   - mqtt-proxy
   - ip-restriction
   - limit-conn
 
 # -- Set APISIX plugin attributes, see [config-default.yaml](https://github.com/apache/apisix/blob/master/conf/config-default.yaml#L376) for more details
-pluginAttrs: {}
+pluginAttrs:
+  log-rotate:
+    interval: 86400
+    max_kept: 168
+    max_size: -1
+    enable_compression: false
 
 extPlugin:
   # -- Enable External Plugins. See [external plugin](https://apisix.apache.org/docs/apisix/next/external-plugin/)
@@ -415,13 +421,13 @@ logs:
   # -- Enable access log or not, default true
   enableAccessLog: true
   # -- Access log path
-  accessLog: "/dev/stdout"
+  accessLog: "/usr/local/apisix/logs/access.log"
   # -- Access log format
   accessLogFormat: '$remote_addr - $remote_user [$time_local] $http_host \"$request\" $status $body_bytes_sent $request_time \"$http_referer\" \"$http_user_agent\" $upstream_addr $upstream_status $upstream_response_time \"$upstream_scheme://$upstream_host$upstream_uri\"'
   # -- Allows setting json or default characters escaping in variables
   accessLogFormatEscape: default
   # -- Error log path
-  errorLog: "/dev/stderr"
+  errorLog: "/usr/local/apisix/logs/error.log"
   # -- Error log level
   errorLogLevel: "warn"
 
@@ -460,6 +466,8 @@ configurationSnippet:
   httpSrv: |
 
   httpAdmin: |
+    access_log /usr/local/apisix/logs/apisix.admin.access.log;
+    error_log /usr/local/apisix/logs/apisix.admin.error.log;
 
   stream: |
 
@@ -489,11 +497,13 @@ serviceMonitor:
 # use the FQDN address or the IP of the etcd
 etcd:
   # -- install etcd(v3) by default, set false if do not want to install etcd(v3) together
-  enabled: true
+  enabled: false
   # -- if etcd.enabled is false, use external etcd, support multiple address, if your etcd cluster enables TLS, please use https scheme, e.g. https://127.0.0.1:2379.
   host:
     # host or ip e.g. http://172.20.128.89:2379
-    - http://etcd.host:2379
+    - http://_ETCD_IP1_:2379
+    - http://_ETCD_IP2_:2379
+    - http://_ETCD_IP3_:2379
   # -- apisix configurations prefix
   prefix: "/apisix"
   # -- Set the timeout value in seconds for subsequent socket operations from apisix to etcd cluster
