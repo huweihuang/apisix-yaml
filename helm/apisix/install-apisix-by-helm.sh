@@ -11,6 +11,7 @@ helm repo add apisix https://charts.apiseven.com
 helm repo update
 
 # 拉取helm chart
+rm -fr apisix.bak
 mv apisix apisix.bak
 helm pull apisix/apisix --untar
 

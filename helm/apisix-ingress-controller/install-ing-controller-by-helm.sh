@@ -8,6 +8,7 @@ helm repo add apisix https://charts.apiseven.com
 helm repo update
 
 # 拉取helm chart
+rm -fr apisix-ingress-controller.bak
 mv apisix-ingress-controller apisix-ingress-controller.bak
 helm pull apisix/apisix-ingress-controller --untar
 
