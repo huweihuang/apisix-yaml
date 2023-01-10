@@ -1,3 +1,10 @@
+# 快速部署apisix 
+
+```bash
+wget https://raw.githubusercontent.com/huweihuang/apisix-yaml/main/helm/apisix/install-apisix-by-helm.sh
+bash install-apisix-by-helm.sh <zone> <etcd1_ip> <etcd2_ip> <etcd3_ip>
+```
+
 # apisix.values.yaml配置修改
 
 - kind: DaemonSet

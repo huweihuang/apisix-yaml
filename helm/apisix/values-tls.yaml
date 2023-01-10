@@ -356,17 +356,22 @@ updateStrategy: {}
 
 # -- Additional `volume`, See [Kubernetes Volumes](https://kubernetes.io/docs/concepts/storage/volumes/) for the detail.
 extraVolumes: 
-  - name: etcd-tls-secret
-    secret:
-      defaultMode: 256
-      secretName: etcd-tls-secret
+  - hostPath:
+      path: /data/apisix/log
+      type: DirectoryOrCreate
+    name: log
+  - hostPath:
+      path: /etc/localtime
+    name: localtime
 # - name: extras
 #   emptyDir: {}
 
 # -- Additional `volume`, See [Kubernetes Volumes](https://kubernetes.io/docs/concepts/storage/volumes/) for the detail.
 extraVolumeMounts: 
-  - mountPath: /etc/etcd/pki
-    name: etcd-tls-secret
+  - mountPath: /usr/local/apisix/logs
+    name: log
+  - mountPath: /etc/localtime
+    name: localtime
 # - name: extras
 #   mountPath: /usr/share/extras
 #   readOnly: true
@@ -528,11 +533,11 @@ etcd:
       # -- enable etcd client certificate
       enabled: true
       # -- name of the secret contains etcd client cert
-      existingSecret: ""
+      existingSecret: "etcd-tls-secret"
       # -- etcd client cert filename using in etcd.auth.tls.existingSecret
-      certFilename: "/etc/etcd/pki/server.pem"
+      certFilename: "/etcd-ssl/server.pem"
       # -- etcd client cert key filename using in etcd.auth.tls.existingSecret
-      certKeyFilename: "/etc/etcd/pki/server-key.pem"
+      certKeyFilename: "/etcd-ssl/server-key.pem"
       # -- whether to verify the etcd endpoint certificate when setup a TLS connection to etcd
       verify: true
       # -- specify the TLS Server Name Indication extension, the ETCD endpoint hostname will be used when this setting is unset.
