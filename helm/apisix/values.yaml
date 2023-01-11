@@ -124,11 +124,11 @@ apisix:
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
-      cpu: 500m
-      memory: 500Mi
+      cpu: 1
+      memory: 2Gi
     requests:
-      cpu: 500m
-      memory: 500Mi
+      cpu: 1
+      memory: 2Gi
   hostNetwork: true
 
   # -- Node labels for Apache APISIX pod assignment

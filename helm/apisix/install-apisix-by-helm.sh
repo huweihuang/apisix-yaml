@@ -5,6 +5,7 @@ ZONE=$1
 ETCD_IP1=$2
 ETCD_IP2=$3
 ETCD_IP3=$4
+TLS_TYPE=$5
 
 # 添加和更新仓库
 helm repo add apisix https://charts.apiseven.com
@@ -16,7 +17,11 @@ mv apisix apisix.bak
 helm pull apisix/apisix --untar
 
 # 修改values.yaml
-wget https://raw.githubusercontent.com/huweihuang/apisix-yaml/main/helm/apisix/values.yaml
+if [ ${TLS_TYPE} -eq 1 ]; then
+    wget https://raw.githubusercontent.com/huweihuang/apisix-yaml/main/helm/apisix/values-tls.yaml -O values.yaml
+else
+    wget https://raw.githubusercontent.com/huweihuang/apisix-yaml/main/helm/apisix/values.yaml -O values.yaml
+fi
 
 sed -i "s|_ZONE_|${ZONE}|;
 s|_ETCD_IP1_|${ETCD_IP1}|;

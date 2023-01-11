@@ -2,7 +2,11 @@
 
 ```bash
 wget https://raw.githubusercontent.com/huweihuang/apisix-yaml/main/helm/apisix/install-apisix-by-helm.sh
+# etcd without tls
 bash install-apisix-by-helm.sh <zone> <etcd1_ip> <etcd2_ip> <etcd3_ip>
+
+# etcd with tls
+bash install-apisix-by-helm.sh <zone> <etcd1_ip> <etcd2_ip> <etcd3_ip> 1
 ```
 
 # apisix.values.yaml配置修改

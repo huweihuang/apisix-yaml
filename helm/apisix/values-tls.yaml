@@ -124,11 +124,11 @@ apisix:
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
-      cpu: 500m
-      memory: 500Mi
+      cpu: 1
+      memory: 2Gi
     requests:
-      cpu: 500m
-      memory: 500Mi
+      cpu: 1
+      memory: 2Gi
   hostNetwork: true
 
   # -- Node labels for Apache APISIX pod assignment
@@ -191,9 +191,9 @@ gateway:
     servicePort: 443
     containerPort: 9443
     # -- Specifies the name of Secret contains trusted CA certificates in the PEM format used to verify the certificate when APISIX needs to do SSL/TLS handshaking with external services (e.g. etcd)
-    existingCASecret: ""
+    existingCASecret: "etcd-tls-secret"
     # -- Filename be used in the gateway.tls.existingCASecret
-    certCAFilename: ""
+    certCAFilename: "ca.pem"
     http2:
       enabled: true
     # -- TLS protocols allowed to use.
@@ -535,13 +535,13 @@ etcd:
       # -- name of the secret contains etcd client cert
       existingSecret: "etcd-tls-secret"
       # -- etcd client cert filename using in etcd.auth.tls.existingSecret
-      certFilename: "/etcd-ssl/server.pem"
+      certFilename: "server.pem"
       # -- etcd client cert key filename using in etcd.auth.tls.existingSecret
-      certKeyFilename: "/etcd-ssl/server-key.pem"
+      certKeyFilename: "server-key.pem"
       # -- whether to verify the etcd endpoint certificate when setup a TLS connection to etcd
       verify: true
       # -- specify the TLS Server Name Indication extension, the ETCD endpoint hostname will be used when this setting is unset.
-      sni: ""
+      sni: "etcd-sni"
 
   service:
     port: 2379
