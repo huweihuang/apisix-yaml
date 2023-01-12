@@ -28,7 +28,7 @@ image:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   # Apache APISIX Dashboard image tag (immutable tags are recommended)
-  tag: 2.15.0-alpine
+  tag: "_APP_VERSION_"
 
 # -- Docker registry secret names as an array
 imagePullSecrets: []
@@ -77,7 +77,9 @@ config:
     etcd:
       # -- Supports defining multiple etcd host addresses for an etcd cluster
       endpoints:
-        - apisix-etcd:2379
+        - http://_ETCD_IP1_:2379
+        - http://_ETCD_IP2_:2379
+        - http://_ETCD_IP3_:2379
       # -- apisix configurations prefix
       prefix: "/apisix"
       # -- Specifies etcd basic auth username if enable etcd auth
@@ -159,7 +161,7 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 # -- Node labels for pod assignment
-nodeSelector: {}
+  nodeSelector: {apisix.io/apisix-worker-zone: _ZONE_}
 
 # -- Tolerations for pod assignment
 tolerations: []
