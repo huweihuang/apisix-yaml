@@ -6,15 +6,21 @@ ETCD_IP1=$2
 ETCD_IP2=$3
 ETCD_IP3=$4
 TLS_TYPE=$5
+VERSION=$6
+VERSION=${VERSION:-0.11.4} # chart version 0.11.4, apisix verison 2.15.1
 
 # 添加和更新仓库
 helm repo add apisix https://charts.apiseven.com
 helm repo update
 
+# 备份
+date=$(date "+%Y%m%d-%H%M%S")
+if [ -d "apisix-ingress-controller" ]; then
+    mv apisix apisix.${date}
+fi
+
 # 拉取helm chart
-rm -fr apisix.bak
-mv apisix apisix.bak
-helm pull apisix/apisix --untar
+helm pull apisix/apisix --untar --version ${VERSION}
 
 # 修改values.yaml
 if [ ${TLS_TYPE} -eq 1 ]; then
@@ -31,4 +37,4 @@ s|_ETCD_IP3_|${ETCD_IP3}|" values.yaml
 mv values.yaml apisix/values.yaml
 
 # 部署
-helm upgrade apisix ./apisix -n ${ZONE}
+helm install apisix ./apisix -n ${ZONE}

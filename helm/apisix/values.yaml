@@ -81,7 +81,7 @@ apisix:
     pullPolicy: IfNotPresent
     # -- Apache APISIX image tag
     # Overrides the image tag whose default is the chart appVersion.
-    tag: 3.0.0-debian
+    tag: 2.15.1
 
   # -- Use a `DaemonSet` or `Deployment`
   kind: DaemonSet
@@ -245,7 +245,7 @@ admin:
   allow:
     # -- The client IP CIDR allowed to access Apache APISIX Admin API service.
     ipList:
-      - 127.0.0.1/24
+      - 0.0.0.0/0
 
 nginx:
   workerRlimitNofile: "20480"

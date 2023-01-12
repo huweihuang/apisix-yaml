@@ -81,7 +81,7 @@ apisix:
     pullPolicy: IfNotPresent
     # -- Apache APISIX image tag
     # Overrides the image tag whose default is the chart appVersion.
-    tag: 3.0.0-debian
+    tag: 2.15.1
 
   # -- Use a `DaemonSet` or `Deployment`
   kind: DaemonSet
@@ -187,7 +187,7 @@ gateway:
     containerPort: 9080
   # -- Apache APISIX service settings for tls
   tls:
-    enabled: false
+    enabled: true
     servicePort: 443
     containerPort: 9443
     # -- Specifies the name of Secret contains trusted CA certificates in the PEM format used to verify the certificate when APISIX needs to do SSL/TLS handshaking with external services (e.g. etcd)
@@ -245,7 +245,7 @@ admin:
   allow:
     # -- The client IP CIDR allowed to access Apache APISIX Admin API service.
     ipList:
-      - 127.0.0.1/24
+      - 0.0.0.0/0
 
 nginx:
   workerRlimitNofile: "20480"

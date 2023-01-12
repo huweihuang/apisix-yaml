@@ -42,7 +42,7 @@ replicaCount: 1
 image:
   repository: apache/apisix-ingress-controller
   pullPolicy: IfNotPresent
-  tag: "1.6.0-rc1"
+  tag: "1.5.1"
 
 podAnnotations: {}
 
@@ -135,11 +135,11 @@ config:
 
 resources:
   limits:
-    cpu: 500m
-    memory: 500Mi
+    cpu: 1
+    memory: 1Gi
   requests:
-    cpu: 500m
-    memory: 500Mi
+    cpu: 1
+    memory: 1Gi
 
 initContainer:
   image: busybox
