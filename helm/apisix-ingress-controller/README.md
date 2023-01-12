@@ -10,6 +10,12 @@
 
 - resources
 
+# 快速部署apisix 
+
+```bash
+wget https://raw.githubusercontent.com/huweihuang/apisix-yaml/main/helm/apisix-ingress-controller/install-ing-controller-by-helm.sh
+# etcd without tls
+bash install-ing-controller-by-helm <zone>
 # 脚本
 
 ```bash
