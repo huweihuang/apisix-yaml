@@ -20,13 +20,19 @@ bash gen-apisix-yaml.sh -z <zone> -a <etcd_ip1> -b <etcd_ip2> -c <etcd_ip3>
 
 ## 部署apisix套件
 
+### 一键部署
+
+```bash
+bash deploy.sh <zone>
+```
+
 ### apisix
 
 ```bash
 # 如果要部署为 daemonset,则执行以下命令
 kubectl create -f apisix/apisix-ds.yaml
 # 如果要部署为 deployment,则执行以下命令
-kubectl create -f apisix/apisix-deployment.yaml
+kubectl create -f apisix/apisix-dep.yaml
 ```
 
 ### apisix-ingress-controller
