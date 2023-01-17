@@ -1,16 +1,32 @@
 #!/bin/bash
-set -ex
+set -e
 
-# example:
-# bash gen-apisix-yaml.sh -z <zone> -a <etcd_ip1> -b <etcd_ip2> -c <etcd_ip3>
 
 ZONE=
 ETCD_IP1=
 ETCD_IP2=
 ETCD_IP3=
-APISIX_ADDR=
 
-while getopts ":z:a:b:c:d:h" opt
+function usage(){
+	shellname="`echo ${0##*/}`"
+
+	echo -e "usage:
+	-h                显示帮助
+	-z [zone]         部署区域
+	-a [etcd_ip1]     Etcd节点1的IP
+	-b [etcd_ip2]     Etcd节点2的IP
+	-c [etcd_ip3]     Etcd节点3的IP
+"
+
+	echo "example:
+
+bash gen-apisix-yaml.sh -z <zone> -a <etcd_ip1> -b <etcd_ip2> -c <etcd_ip3>
+"
+	exit
+}
+
+
+while getopts ":z:a:b:c:h" opt
 do
     case $opt in
         z) ZONE=$OPTARG
@@ -25,14 +41,11 @@ do
         c) ETCD_IP3=$OPTARG
         echo "ETCD_IP3 value: $OPTARG"
         ;;
-        h)
-        echo "bash gen-apisix-yaml.sh -z <zone> -a <etcd_ip1> -b <etcd_ip2> -c <etcd_ip3>"
-        ;;
-        ?)
-        echo "invalid arg"
-        exit 1;;
+       	h) usage;;
+        *) usage;;
     esac
 done
+
 
 # clean and copy
 echo "Remove ${ZONE}"
