@@ -30,7 +30,7 @@ data:
       apisix_route_version: "apisix.apache.org/v2beta3"
       enable_gateway_api: false
     apisix:
-      default_cluster_base_url: http://apisix-admin._ZONE_.svc.cluster.local:9180/apisix/admin
+      default_cluster_base_url: http://apisix-admin._ZONE_.svc.cluster.local:9081/apisix/admin
       default_cluster_admin_key: "edd1c9f034335f136f87ad84b625c8f1"
       default_cluster_name: "default"
 
@@ -138,7 +138,7 @@ spec:
         - command:
             - sh
             - -c
-            - until nc -z apisix-admin._ZONE_.svc.cluster.local 9180 ; do echo waiting
+            - until nc -z apisix-admin._ZONE_.svc.cluster.local 9081 ; do echo waiting
               for apisix-admin; sleep 2; done;
           image: busybox:1.28
           imagePullPolicy: IfNotPresent

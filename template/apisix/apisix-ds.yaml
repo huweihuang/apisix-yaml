@@ -38,8 +38,8 @@ spec:
               hostPort: 9443
               name: tls
               protocol: TCP
-            - containerPort: 9180
-              hostPort: 9180
+            - containerPort: 9081
+              hostPort: 9081
               name: admin
               protocol: TCP
           readinessProbe:
@@ -105,8 +105,8 @@ spec:
   type: ClusterIP
   ports:
     - name: apisix-admin
-      port: 9180
-      targetPort: 9180
+      port: 9081
+      targetPort: 9081
       protocol: TCP
   selector:
     app.kubernetes.io/name: apisix
@@ -198,10 +198,9 @@ data:
       #    cache_levels: "1:2"
 
       allow_admin:                  # http://nginx.org/en/docs/http/ngx_http_access_module.html#allow
-        - 127.0.0.1/24
         - 0.0.0.0/0
       #   - "::/64"
-      port_admin: 9180
+      port_admin: 9081
 
       # Default token when use API to call for Admin API.
       # *NOTE*: Highly recommended to modify this value to protect APISIX's Admin API.
@@ -276,7 +275,7 @@ data:
         - "http://_ETCD_IP1_:2379"
         - "http://_ETCD_IP2_:2379"
         - "http://_ETCD_IP3_:2379"
-      prefix: "/apisix"     # apisix configurations prefix
+      prefix: "/_ZONE_"     # apisix configurations prefix
       timeout: 30   # 30 seconds
     plugins:                          # plugin list
       - api-breaker
