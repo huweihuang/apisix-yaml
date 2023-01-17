@@ -35,7 +35,6 @@ data:
       default_cluster_name: "default"
 
 ---
-
 # Source: apisix-ingress-controller/templates/service.yaml
 
 apiVersion: v1
@@ -63,73 +62,98 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: apisix-ingress-controller
-  namespace: apisix
   labels:
-    app.kubernetes.io/name: apisix-ingress-controller
     app.kubernetes.io/instance: apisix-ingress-controller
+    app.kubernetes.io/name: apisix-ingress-controller
+  name: apisix-ingress-controller
+  namespace: _ZONE_
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: apisix-ingress-controller
       app.kubernetes.io/instance: apisix-ingress-controller
+      app.kubernetes.io/name: apisix-ingress-controller
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
   template:
     metadata:
       annotations:
         checksum/config: 86ac8ff10e36f63868e04c84289207a8525cdd54cb6f6c94808889a20cb7843e
+      creationTimestamp: null
       labels:
-        app.kubernetes.io/name: apisix-ingress-controller
         app.kubernetes.io/instance: apisix-ingress-controller
+        app.kubernetes.io/name: apisix-ingress-controller
     spec:
-      serviceAccountName: apisix-ingress-controller
-      securityContext:
-        {}
-      volumes:
-        - name: configuration
-          configMap:
-            name: apisix-ingress-controller-configmap
-            items:
-              - key: config.yaml
-                path: config.yaml
-      initContainers:
-        - name: wait-apisix-admin
-          image: busybox:1.28
-          command: ['sh', '-c', "until nc -z apisix-admin._ZONE_.svc.cluster.local 9180 ; do echo waiting for apisix-admin; sleep 2; done;"]
-          securityContext:
-            {}
       containers:
-        - name: apisix-ingress-controller
-          command:
+        - command:
             - /ingress-apisix/apisix-ingress-controller
             - ingress
             - --config-path
             - /ingress-apisix/conf/config.yaml
-          image: "apache/apisix-ingress-controller:1.4.1"
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+          image: apache/apisix-ingress-controller:1.5.1
           imagePullPolicy: IfNotPresent
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
           livenessProbe:
+            failureThreshold: 3
             httpGet:
               path: /healthz
               port: 8080
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: apisix-ingress-controller
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
           readinessProbe:
+            failureThreshold: 3
             httpGet:
               path: /healthz
               port: 8080
-          resources:
-            {}
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
           volumeMounts:
             - mountPath: /ingress-apisix/conf
               name: configuration
-          env:
-          - name: POD_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
+      dnsPolicy: ClusterFirst
+      initContainers:
+        - command:
+            - sh
+            - -c
+            - until nc -z apisix-admin._ZONE_.svc.cluster.local 9180 ; do echo waiting
+              for apisix-admin; sleep 2; done;
+          image: busybox:1.28
+          imagePullPolicy: IfNotPresent
+          name: wait-apisix-admin
+          resources: {}
+      nodeSelector:
+        apisix.io/apisix-worker-zone: _ZONE_
+      restartPolicy: Always
+      serviceAccount: apisix-ingress-controller
+      serviceAccountName: apisix-ingress-controller
+      volumes:
+        - configMap:
+            defaultMode: 420
+            items:
+              - key: config.yaml
+                path: config.yaml
+            name: apisix-ingress-controller-configmap
+          name: configuration
