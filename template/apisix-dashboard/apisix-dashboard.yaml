@@ -121,3 +121,5 @@ spec:
         - configMap:
             name: apisix-dashboard
           name: apisix-dashboard-config
+      nodeSelector:
+        apisix.io/apisix-worker-zone: _ZONE_

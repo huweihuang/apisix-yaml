@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -x
 
 zone=$1
 cd ${zone}
@@ -8,8 +8,8 @@ cd ${zone}
 kubectl apply -f apisix/apisix-ds.yaml
 
 # ingress-controller
-kubectl apply -f apisix-ingress-controller/customresourcedefinitions.yaml
-kubectl apply -f apisix-ingress-controller/apisix-ingress-controller-rbac.yaml
+kubectl create -f apisix-ingress-controller/customresourcedefinitions.yaml
+kubectl create -f apisix-ingress-controller/apisix-ingress-controller-rbac.yaml
 kubectl apply -f apisix-ingress-controller/apisix-ingress-controller.yaml
 
 # dashboard
