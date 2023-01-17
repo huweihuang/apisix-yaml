@@ -10,20 +10,28 @@ helm部署脚本参考 [helm](helm)
 git clone https://github.com/huweihuang/apisix-yaml.git
 ```
 
-安装
+# 部署
 
-> 需要提前部署etcd并修改apisix配置。
+## 需要提前部署etcd并修改apisix配置
 
 ```bash
-# apisix configmap and service
-kubectl create -f apisix/apisix-cm.yaml
-kubectl create -f apisix/apisix-svc.yaml
+bash gen-apisix-yaml.sh -z <zone> -a <etcd_ip1> -b <etcd_ip2> -c <etcd_ip3>
+```
+
+## 部署apisix套件
+
+### apisix
+
+```bash
 # 如果要部署为 daemonset,则执行以下命令
-kubectl create -f apisix/apisix-daemonset.yaml
+kubectl create -f apisix/apisix-ds.yaml
 # 如果要部署为 deployment,则执行以下命令
 kubectl create -f apisix/apisix-deployment.yaml
+```
 
-# apisix-ingress-controller
+### apisix-ingress-controller
+
+```bash
 # apisix crd
 # wget https://raw.githubusercontent.com/apache/apisix-helm-chart/apisix-ingress-controller-0.9.3/charts/apisix-ingress-controller/crds/customresourcedefinitions.yaml
 kubectl create -f apisix-ingress-controller/customresourcedefinitions.yaml
@@ -31,8 +39,46 @@ kubectl create -f apisix-ingress-controller/customresourcedefinitions.yaml
 kubectl create -f apisix-ingress-controller/apisix-ingress-controller-rbac.yaml
 # ingress-controller deployment
 kubectl create -f apisix-ingress-controller/apisix-ingress-controller.yaml
+```
 
-# apisix-dashborad
+如果要在同一个k8s集群中部署多套ingress-controller，则需要创建新的ServiceAccount。
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: apisix-ingress-controller
+  namespace: _ZONE2_
+automountServiceAccountToken: true
+```
+
+并修改apisix-ingress-controller-clusterrolebinding，添加ServiceAccount。
+
+```
+kubectl edit ClusterRoleBinding apisix-ingress-controller-clusterrolebinding
+```
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: apisix-ingress-controller-clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: apisix-ingress-controller-clusterrole
+subjects:
+  - kind: ServiceAccount
+    name: apisix-ingress-controller
+    namespace: _ZONE_
+  - kind: ServiceAccount
+    name: apisix-ingress-controller
+    namespace: _ZONE2_
+```
+
+### apisix-dashborad
+
+```bash
 kubectl create -f apisix-dashboard/apisix-dashboard.yaml
 ```
 

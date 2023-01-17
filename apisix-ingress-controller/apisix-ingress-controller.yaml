@@ -1,6 +1,10 @@
 # Source: apisix-ingress-controller/templates/configmap.yaml
 
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apisix-ingress-controller-configmap
+  namespace: _ZONE_
 data:
   config.yaml: |
     # log options
@@ -20,25 +24,16 @@ data:
       namespace_selector:
       - "apisix.ingress=watching"
       election_id: "ingress-apisix-leader"
-      ingress_class: "apisix"
+      ingress_class: "_ZONE_"
       ingress_version: "networking/v1"
       watch_endpointslices: false
       apisix_route_version: "apisix.apache.org/v2beta3"
       enable_gateway_api: false
     apisix:
-      default_cluster_base_url: http://apisix-admin.apisix.svc.cluster.local:9180/apisix/admin
+      default_cluster_base_url: http://apisix-admin._ZONE_.svc.cluster.local:9180/apisix/admin
       default_cluster_admin_key: "edd1c9f034335f136f87ad84b625c8f1"
       default_cluster_name: "default"
-kind: ConfigMap
-metadata:
-  name: apisix-ingress-controller-configmap
-  namespace: apisix
-  labels:
-    helm.sh/chart: apisix-ingress-controller-0.9.3
-    app.kubernetes.io/name: apisix-ingress-controller
-    app.kubernetes.io/instance: apisix-ingress-controller
-    app.kubernetes.io/version: "1.4.1"
-    app.kubernetes.io/managed-by: Helm
+
 ---
 
 # Source: apisix-ingress-controller/templates/service.yaml
@@ -47,13 +42,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: apisix-ingress-controller
-  namespace: apisix
+  namespace: _ZONE_
   labels:
-    helm.sh/chart: apisix-ingress-controller-0.9.3
     app.kubernetes.io/name: apisix-ingress-controller
     app.kubernetes.io/instance: apisix-ingress-controller
-    app.kubernetes.io/version: "1.4.1"
-    app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
   ports:
@@ -64,6 +56,7 @@ spec:
   selector:
     app.kubernetes.io/name: apisix-ingress-controller
     app.kubernetes.io/instance: apisix-ingress-controller
+
 ---
 # Source: apisix-ingress-controller/templates/deployment.yaml
 
@@ -73,11 +66,8 @@ metadata:
   name: apisix-ingress-controller
   namespace: apisix
   labels:
-    helm.sh/chart: apisix-ingress-controller-0.9.3
     app.kubernetes.io/name: apisix-ingress-controller
     app.kubernetes.io/instance: apisix-ingress-controller
-    app.kubernetes.io/version: "1.4.1"
-    app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
   selector:
@@ -105,7 +95,7 @@ spec:
       initContainers:
         - name: wait-apisix-admin
           image: busybox:1.28
-          command: ['sh', '-c', "until nc -z apisix-admin.apisix.svc.cluster.local 9180 ; do echo waiting for apisix-admin; sleep 2; done;"]
+          command: ['sh', '-c', "until nc -z apisix-admin._ZONE_.svc.cluster.local 9180 ; do echo waiting for apisix-admin; sleep 2; done;"]
           securityContext:
             {}
       containers:

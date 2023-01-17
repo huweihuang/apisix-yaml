@@ -4,7 +4,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: apisix-ingress-controller
-  namespace: apisix
+  namespace: _ZONE_
 automountServiceAccountToken: true
 ---
 # Source: apisix-ingress-controller/templates/rbac.yaml
@@ -172,5 +172,5 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: apisix-ingress-controller
-    namespace: apisix
+    namespace: _ZONE_
 ---
