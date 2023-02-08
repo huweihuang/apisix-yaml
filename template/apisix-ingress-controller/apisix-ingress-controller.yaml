@@ -147,7 +147,6 @@ spec:
       nodeSelector:
         apisix.io/apisix-worker-zone: _ZONE_
       restartPolicy: Always
-      serviceAccount: apisix-ingress-controller
       serviceAccountName: apisix-ingress-controller
       volumes:
         - configMap:

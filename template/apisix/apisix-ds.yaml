@@ -75,6 +75,7 @@ spec:
         apisix.io/apisix-worker-zone: _ZONE_
       restartPolicy: Always
       securityContext: {}
+      serviceAccountName: apisix
       volumes:
         - configMap:
             defaultMode: 420
